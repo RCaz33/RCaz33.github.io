@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCaz33 | GitHub Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #4078c0 0%, #6e5494 100%);
+        }
+        .repo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .language-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-800 bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fab fa-github text-gray-900 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-gray-900">RCaz33</span>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="#repositories" class="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Repositories</a>
+                        <a href="#about" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">About</a>
+                        <a href="#stats" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Stats</a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    <a href="https://github.com/RCaz33?tab=repositories" class="bg-gray-900 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium mr-4">
+                        <i class="fab fa-github mr-2"></i> View on GitHub
+                    </a>
+                </div>
+                <div class="-mr-2 flex items-center sm:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="gradient-bg text-white">
+        <div class="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="mx-auto h-24 w-24 rounded-full overflow-hidden border-4 border-white mb-6">
+                    <img src="https://media.licdn.com/dms/image/v2/D4D03AQFDO8C5BkaPmA/profile-displayphoto-shrink_400_400/B4DZaBKSAHHwAk-/0/1745923678682?e=1752710400&v=beta&t=_prAmVCdmREgTBva9E9mEUdA-QfrYRgQlOofoty_Z7Q" alt="GitHub Avatar" class="h-full w-full object-cover">
+                </div>
+                <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                    RCaz33's GitHub Portfolio
+                </h1>
+                <p class="mt-6 max-w-lg mx-auto text-xl">
+                    Exploring the world of code, one repository at a time.
+                </p>
+                <div class="mt-10 flex justify-center space-x-4">
+                    <a href="#repositories" class="pulse bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-md text-lg font-bold shadow-lg">
+                        My Repositories <i class="fas fa-arrow-down ml-2"></i>
+                    </a>
+                    <a href="https://github.com/RCaz33?tab=repositories" class="border border-white text-white hover:bg-blue-700 px-8 py-4 rounded-md text-lg font-medium">
+                        <i class="fab fa-github mr-2"></i> GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div id="stats" class="bg-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center mb-12">
+                <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">GitHub Stats</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    My Coding Journey
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
+                <div class="bg-gray-50 p-6 rounded-lg shadow text-center">
+                    <div class="text-blue-600 text-4xl mb-2">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 pulse" id="repo-count">Loading...</h3>
+                    <p class="mt-2 text-gray-600">Public Repositories</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow text-center">
+                    <div class="text-blue-600 text-4xl mb-2">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 pulse" id="star-count">Loading...</h3>
+                    <p class="mt-2 text-gray-600">Total Stars</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow text-center">
+                    <div class="text-blue-600 text-4xl mb-2">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 pulse" id="language-count">Loading...</h3>
+                    <p class="mt-2 text-gray-600">Languages Used</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div id="about" class="bg-gray-50 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center mb-12">
+                <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">About</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    Who Am I?
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-lg shadow">
+                <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Developer Profile</h3>
+                        <p class="text-gray-600 mb-4">
+                            Hello! I'm RCaz33, a passionate developer exploring various technologies and sharing my projects on GitHub.
+                        </p>
+                        <p class="text-gray-600 mb-4">
+                            My repositories showcase my journey through different programming languages, frameworks, and tools as I continue to learn and grow.
+                        </p>
+                        <div class="mt-6">
+                            <a href="https://github.com/RCaz33?tab=repositories" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                                <i class="fab fa-github mr-2"></i> Explore My GitHub
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Top Skills</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900">Web Development</h4>
+                                <div class="mt-1 w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900">JavaScript/TypeScript</h4>
+                                <div class="mt-1 w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900">Python</h4>
+                                <div class="mt-1 w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900">DevOps</h4>
+                                <div class="mt-1 w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: 70%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repositories Section -->
+    <div id="repositories" class="bg-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center mb-12">
+                <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">Projects</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    My GitHub Repositories
+                </p>
+                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+                    A selection of my public projects and contributions
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" id="repos-container">
+                <!-- Repositories will be loaded here by JavaScript -->
+                <div class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+                    <p class="mt-4 text-gray-600">Loading repositories...</p>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <a href="https://github.com/RCaz33?tab=repositories" class="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md text-lg font-medium">
+                    View All Repositories <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="gradient-bg text-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
+            <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">
+                <span class="block">Want to connect?</span>
+                <span class="block">Reach out through GitHub.</span>
+            </h2>
+            <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
+                <div class="inline-flex rounded-md shadow">
+                    <a href="https://github.com/RCaz33" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-md text-blue-600 bg-white hover:bg-gray-50">
+                        <i class="fab fa-github mr-2"></i> GitHub Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white text-sm font-semibold tracking-wider uppercase">Navigation</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#repositories" class="text-gray-300 hover:text-white text-base">Repositories</a></li>
+                        <li><a href="#about" class="text-gray-300 hover:text-white text-base">About</a></li>
+                        <li><a href="#stats" class="text-gray-300 hover:text-white text-base">Stats</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white text-sm font-semibold tracking-wider uppercase">GitHub</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="https://github.com/RCaz33" class="text-gray-300 hover:text-white text-base">Profile</a></li>
+                        <li><a href="https://github.com/RCaz33?tab=repositories" class="text-gray-300 hover:text-white text-base">Repositories</a></li>
+                        <li><a href="https://github.com/RCaz33?tab=stars" class="text-gray-300 hover:text-white text-base">Starred</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white text-sm font-semibold tracking-wider uppercase">Resources</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="https://docs.github.com/" class="text-gray-300 hover:text-white text-base">GitHub Docs</a></li>
+                        <li><a href="https://github.com/features" class="text-gray-300 hover:text-white text-base">GitHub Features</a></li>
+                        <li><a href="https://github.com/trending" class="text-gray-300 hover:text-white text-base">Trending</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white text-sm font-semibold tracking-wider uppercase">Connect</h3>
+                    <div class="mt-4 flex space-x-6">
+                        <a href="https://github.com/RCaz33" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin-in text-2xl"></i>
+                        </a>
+                    </div>
+                    <div class="mt-6">
+                        <p class="text-gray-300 text-sm">
+                            Page built with HuggongSpace enzostvs/deepsite - Powered by GitHub API
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-gray-700 pt-8">
+                <p class="text-gray-400 text-sm text-center">
+                    &copy; 2023 RCaz33's GitHub Portfolio. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch GitHub repositories
+            fetch('https://api.github.com/users/RCaz33/repos?sort=updated&direction=desc')
+                .then(response => response.json())
+                .then(repos => {
+                    const reposContainer = document.getElementById('repos-container');
+                    const repoCount = document.getElementById('repo-count');
+                    const starCount = document.getElementById('star-count');
+                    
+                    // Calculate total stars
+                    const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+                    
+                    // Count unique languages
+                    const languages = new Set();
+                    repos.forEach(repo => {
+                        if (repo.language) {
+                            languages.add(repo.language);
+                        }
+                    });
+                    
+                    // Update stats
+                    repoCount.textContent = repos.length;
+                    starCount.textContent = totalStars;
+                    document.getElementById('language-count').textContent = languages.size;
+                    
+                    // Clear loading message
+                    reposContainer.innerHTML = '';
+                    
+                    // Display first 6 repositories
+                    repos.slice(0, 6).forEach(repo => {
+                        const repoCard = document.createElement('div');
+                        repoCard.className = 'repo-card bg-gray-50 overflow-hidden shadow rounded-lg transition duration-300 ease-in-out';
+                        
+                        // Get language color (this is a simplified approach)
+                        const languageColor = getLanguageColor(repo.language);
+                        
+                        repoCard.innerHTML = `
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+                                        <i class="fas fa-code text-blue-600 text-xl"></i>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <h3 class="text-lg font-medium text-gray-900 truncate">${repo.name}</h3>
+                                        <p class="mt-1 text-sm text-gray-500">Updated ${formatDate(repo.updated_at)}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-gray-600">${repo.description || 'No description provided.'}</p>
+                                </div>
+                                <div class="mt-6 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        ${repo.language ? `
+                                        <span class="language-color" style="background-color: ${languageColor};"></span>
+                                        <span class="text-sm text-gray-500">${repo.language}</span>
+                                        ` : ''}
+                                    </div>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex items-center text-gray-500 text-sm">
+                                            <i class="fas fa-star mr-1"></i>
+                                            <span>${repo.stargazers_count}</span>
+                                        </div>
+                                        <div class="flex items-center text-gray-500 text-sm">
+                                            <i class="fas fa-code-branch mr-1"></i>
+                                            <span>${repo.forks_count}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <a href="${repo.html_url}" target="_blank" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                        View Repository
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                        
+                        reposContainer.appendChild(repoCard);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching GitHub data:', error);
+                    document.getElementById('repos-container').innerHTML = `
+                        <div class="text-center py-8 col-span-3">
+                            <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
+                            <p class="mt-4 text-gray-600">Failed to load repositories. Please try again later.</p>
+                        </div>
+                    `;
+                });
+                
+            // Format date to relative time
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffInSeconds = Math.floor((now - date) / 1000);
+                
+                if (diffInSeconds < 60) return 'just now';
+                if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+                if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+                if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+                if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
+                return `${Math.floor(diffInSeconds / 31536000)} years ago`;
+            }
+            
+            // Simplified language color mapping
+            function getLanguageColor(language) {
+                if (!language) return '#ccc';
+                
+                const colors = {
+                    'JavaScript': '#f1e05a',
+                    'TypeScript': '#3178c6',
+                    'Python': '#3572A5',
+                    'Java': '#b07219',
+                    'C++': '#f34b7d',
+                    'C#': '#178600',
+                    'Ruby': '#701516',
+                    'PHP': '#4F5D95',
+                    'CSS': '#563d7c',
+                    'HTML': '#e34c26',
+                    'Shell': '#89e051',
+                    'Go': '#00ADD8',
+                    'Rust': '#dea584',
+                    'Swift': '#ffac45',
+                    'Kotlin': '#F18E33',
+                    'Dart': '#00B4AB',
+                    'Scala': '#c22d40',
+                    'R': '#198CE7'
+                };
+                
+                return colors[language] || '#ccc';
+            }
+        });
+    </script>
+</body>
+</html>
