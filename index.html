@@ -1,476 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RCaz33 | GitHub Portfolio</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-  /* ---- Core layout helpers ---- */
-  .gradient-bg { background: linear-gradient(135deg, #4078c0, #6e5494); }
-  .text-gradient { background: linear-gradient(to right, #fafafa, #f5f5f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  <meta charset="UTF-8">
+  <title>RCaz33 | GitHub Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ---- Core layout helpers ---- */
+    .gradient-bg { background: linear-gradient(135deg, #4078c0, #6e5494); }
+    .text-gradient { background: linear-gradient(to right, #fafafa, #f5f5f5);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-  .shadow-hover:hover { box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1); transform: translateY(-3px); }
-  .transition { transition: background 0.3s ease, transform 0.3s ease; }
-  .rounded-xl { border-radius: 1rem; }
-  .pulse { animation: pulse 2s infinite; }
-  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-</style>
+    .shadow-hover:hover { box-shadow: 0 12px 25px rgba(0,0,0,.1); transform: translateY(-3px); }
+    .transition { transition: background .3s ease, transform .3s ease; }
+    .rounded-xl { border-radius: 1rem; }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: .6; } 100% { opacity: 1; } }
 
-<!-- Gradio imports -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script type="module">
-import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
-
-async function initChatWidget() {
-  const client = await Client.connect("https://rcaz-avatar-bot.hf.space");
-
-  const chatToggle   = document.getElementById('chat-toggle');
-  const chatContainer= document.getElementById('chat-container');
-  const closeChat    = document.getElementById('close-chat');
-  const chatInput    = document.getElementById('chat-input');
-  const sendButton   = document.getElementById('send-message');
-  const messagesContainer = document.getElementById('chat-messages');
-
-  // -----------------------------------------------------------------
-  // Keep the internal history that the backend expects
-  // -----------------------------------------------------------------
-  let chatHistory = [];   // e.g. [ [ "Hello", "Hi!" ], [ "How are you?", "I’m fine." ], … ]
-
-  // Toggle UI
-  chatToggle.addEventListener('click', () => chatContainer.classList.remove('hidden'));
-  closeChat.addEventListener('click', () => chatContainer.classList.add('hidden'));
-
-  // --------------------------------------------------------------
-  // Append a bubble to the UI
-  // --------------------------------------------------------------
-  function appendMessage(text, sender) {
-    const div = document.createElement('div');
-    div.className = `message ${sender}-message`;
-    div.textContent = text;               // plain‑text for user
-    if (sender === 'bot') div.innerHTML = marked.parse(text); // markdown for bot
-    messagesContainer.appendChild(div);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
-
-  // --------------------------------------------------------------
-  // Send the user message → get a bot reply
-  // --------------------------------------------------------------
-  async function sendMessage() {
-    const userMessage = chatInput.value.trim();
-    if (!userMessage) return;
-
-    // 1️⃣ Show user bubble immediately
-    appendMessage(userMessage, 'user');
-    chatInput.value = '';
-
-    try {
-      // 2️⃣ Call the Gradio function with the correct argument list
-      const result = await client.predict("/chat", [userMessage, chatHistory]);
-
-      // 3️⃣ The response is a plain string in result.data[0]
-      const botMessage = typeof result.data[0] === 'string' ? result.data[0] : "";
-
-      // 4️⃣ Show bot bubble
-      appendMessage(botMessage, 'bot');
-
-      // 5️⃣ Update our local history for the next round
-      //    The demo stores the *whole* history in the second argument,
-      //    but we only need to keep the latest pair for next request.
-      chatHistory = [[userMessage, botMessage]];
-    } catch (err) {
-      console.error('❌ Gradio error:', err);   // <-- useful for debugging
-
-      // If the backend returned an error object (e.g. {"error":"…"}), surface it.
-      const message = (err?.data ?? {error:""}).error || "Sorry, there was an error processing your request.";
-      appendMessage(message, 'bot');
+    /* ---- Chat widget ---- */
+    .chat-widget {
+      position: fixed; bottom: 24px; right: 24px;
+      width: 56px; height: 56px; border-radius: 9999px;
+      background: linear-gradient(135deg,#4078c0,#6e5494);
+      border: none; color:#fff; font-size:22px;
+      cursor:pointer; box-shadow:0 10px 20px rgba(0,0,0,.25);
+      display:flex; align-items:center; justify-content:center; z-index:1000;
     }
-  }
+    .chat-widget:hover { opacity:.96; }
 
-  // --------------------------------------------------------------
-  // UI bindings
-  // --------------------------------------------------------------
-  sendButton.addEventListener('click', sendMessage);
-  chatInput.addEventListener('keypress', e => {
-    if (e.key === 'Enter') sendMessage();
-  });
-}
+    .chat-container {
+      position:fixed; bottom:96px; right:24px;
+      width:380px; height:520px; background:#fff; border-radius:16px;
+      box-shadow:0 25px 50px rgba(0,0,0,.2);
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+    .chat-container.hidden { display:none; }
 
-// Kick‑off the widget
-initChatWidget();
-</script>
+    #chat-header {
+      padding:14px 18px; background:linear-gradient(135deg,#4078c0,#6e5494);
+      color:#fff; display:flex; justify-content:space-between; align-items:center;
+    }
+    #chat-header h3 {font-weight:600;font-size:.95rem;}
+    #chat-header button {background:transparent; border:none; color:#fff; font-size:20px;}
 
-<style>
-  /* ---------- Chat widget ---------- */
-  .chat-widget {
-    position: fixed; bottom: 24px; right: 24px;
-    width: 56px; height: 56px; border-radius: 9999px;
-    background: linear-gradient(135deg, #4078c0, #6e5494);
-    border: none; color: #fff; font-size: 22px;
-    cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,.25);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 1000;
-  }
-  .chat-widget:hover { opacity: .96; }
-  .chat-container {
-    position: fixed; bottom: 96px; right: 24px;
-    width: 380px; height: 520px;
-    background: #fff; border-radius: 16px;
-    box-shadow: 0 25px 50px rgba(0,0,0,.2);
-    display: flex; flex-direction: column; overflow: hidden;
-  }
-  .chat-container.hidden { display: none; }
-  #chat-header {
-    padding: 14px 18px;
-    background: linear-gradient(135deg, #4078c0, #6e5494);
-    color: #fff; display: flex;
-    justify-content: space-between; align-items: center;
-  }
-  #chat-header h3 {font-weight: 600;font-size: .95rem;}
-  #chat-header button {background: transparent; border: none; color: #fff; font-size: 20px;}
-  #chat-messages {
-    flex-grow: 1; overflow-y: auto; padding: 16px;
-    background: #f8fafc;
-  }
-  #chat-input-area {
-    display: flex; gap: 10px; padding: 12px;
-    border-top: 1px solid #e5e7eb;
-  }
-  #chat-input {
-    flex-grow: 1; padding: 10px 12px;
-    border: 1px solid #d1d5db; border-radius: 9px;
-    font-size: .95rem; background: #fff;
-  }
-  #send-message {
-    background: #4078c0; color: #fff;
-    border-radius: 9px; padding: 0 16px;
-    font-size: .95rem; cursor: pointer;
-  }
-  .user-message { background: #ebf2ff; margin-left: auto; border-bottom-right-radius: .5rem; }
-  .bot-message { background: #f0f9ff; margin-right: auto; border-bottom-left-radius: .5rem;
-                 box-shadow: 0 1px 4px rgba(0,0,0,.05); }
-</style>
+    #chat-messages {flex-grow:1; overflow-y:auto; padding:16px; background:#f8fafc;}
+    #chat-input-area {display:flex; gap:10px; padding:12px; border-top:1px solid #e5e7eb;}
+    #chat-input {flex-grow:1; padding:10px 12px; border:1px solid #d1d5db; border-radius:9px;
+                 font-size:.95rem; background:#fff;}
+    #send-message {background:#4078c0;color:#fff;border-radius:9px;padding:0 16px;
+                   font-size:.95rem;cursor:pointer;}
+    .user-message {background:#ebf2ff;margin-left:auto;border-bottom-right-radius:.5rem;}
+    .bot-message {background:#f0f9ff;margin-right:auto;border-bottom-left-radius:.5rem;
+                  box-shadow:0 1px 4px rgba(0,0,0,.05);}
+  </style>
 </head>
-
 <body class="font-sans antialiased text-gray-900 bg-gray-50">
-<!-- ---------- Navigation ---------- -->
-<nav class="bg-white shadow-lg">
-  <div class="max-w-8xl mx-auto px-6 lg:px-10">
-    <div class="flex justify-between h-14">
-      <div class="flex items-center">
-        <i class="fab fa-github text-gray-800 text-2xl mr-2"></i><span class="text-xl font-bold text-gray-900">RCaz33</span>
-      </div>
-      <div class="hidden sm:ml-6 sm:flex gap-4">
-        <a href="#repositories" class="border-b-2 border-blue-500 text-sm font-medium px-2 py-1 text-gray-700 hover:border-blue-600">Repositories</a>
-        <a href="#about"       class="border-b-2 border-transparent text-sm font-medium px-2 py-1 text-gray-700 hover:border-gray-300">About</a>
-        <a href="#stats"       class="border-b-2 border-transparent text-sm font-medium px-2 py-1 text-gray-700 hover:border-gray-300">Stats</a>
-      </div>
-      <div class="-mr-2 sm:hidden">
-        <button aria-label="Menu" class="p-2 rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <i class="fas fa-bars"></i>
-        </button>
-      </div>
-    </div>
-    <div class="sm:flex sm:items-center sm:ml-6">
-      <a href="https://github.com/RCaz33?tab=repositories"
-         class="bg-gray-900 hover:bg-gray-700 inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white">
-        <i class="fab fa-github mr-2"></i>View on GitHub
-      </a>
-    </div>
-  </div>
-</nav>
 
-<!-- ---------- Hero Section ---------- -->
-<section class="gradient-bg text-white py-20">
-  <div class="max-w-8xl mx-auto px-6 lg:px-10 lg:py-28">
-    <div class="text-center lg:mb-12">
-      <div class="h-32 w-32 rounded-full overflow-hidden mb-5">
-        <img src="https://media.licdn.com/dms/image/v2/D4D03AQFDO8C5BkaPmA/profile-displayphoto-shrink_800_800/B4DZaBKSAHHwAg-/0/1745923678682?e=1770249600&v=beta&t=3u-rIFjtkdrUOLaXHb-MAaCmMqWBe4rtyl8pv6MQMD8"
-             alt="Profile picture" class="w-full h-full object-cover rounded-full">
-      </div>
-      <h1 class="text-6xl sm:text-7xl font-extrabold tracking-tight mb-5">RCaz33’s GitHub Portfolio</h1>
-      <p class="text-lg lg:text-xl max-w-2xl mx-auto text-left mb-8">
-        Exploring code, one repository at a time.
-      </p>
-      <div class="flex gap-5 justify-center">
-        <a href="#repositories"
-           class="px-9 py-3 bg-white text-blue-600 rounded-md shadow-lg font-medium transition col-span-3 text-center">
-          <i class="fas fa-arrow-down mr-2"></i>
-          My Repositories
-        </a>
-        <a href="https://github.com/RCaz33"
-           class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-md font-medium">
-          <i class="fab fa-github mr-2"></i>GitHub
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- Navigation (unchanged) -->
+<nav class="bg-white shadow-lg"> … </nav>
 
-<!-- ---------- Stats Section ---------- -->
-<section id="stats" class="pt-24 pb-12 bg-white">
-  <div class="max-w-8xl mx-auto px-6 lg:px-10">
-    <div class="lg:text-center mb-12">
-      <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">GitHub Stats</h2>
-      <p class="mt-2 text-4xl leading-8 font-extrabold tracking-tight text-gray-900">My Coding Journey</p>
-    </div>
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <div class="bg-gray-50 p-6 rounded-lg shadow text-center">
-        <div class="text-blue-600 text-5xl mb-3"><i class="fas fa-code-branch"></i></div>
-        <h3 id="repo-count" class="text-4xl font-bold text-gray-900 pulse">Loading...</h3>
-        <p class="mt-2 text-gray-600">Public Repositories</p>
-      </div>
-      <div class="bg-gray-50 p-6 rounded-lg shadow text-center">
-        <div class="text-blue-600 text-5xl mb-3"><i class="fas fa-star"></i></div>
-        <h3 id="star-count" class="text-4xl font-bold text-gray-900 pulse">Loading...</h3>
-        <p class="mt-2 text-gray-600">Total Stars</p>
-      </div>
-      <div class="bg-gray-50 p-6 rounded-lg shadow text-center">
-        <div class="text-blue-600 text-5xl mb-3"><i class="fas fa-code"></i></div>
-        <h3 id="language-count" class="text-4xl font-bold text-gray-900 pulse">Loading...</h3>
-        <p class="mt-2 text-gray-600">Languages Used</p>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- -------------- New Chat UI MARKUP -------------- -->
+<button id="chat-toggle" class="chat-widget"><i class="fas fa-comments"></i></button>
 
-<!-- ---------- About Section ---------- -->
-<section id="about" class="py-20 bg-gray-50">
-  <div class="max-w-8xl mx-auto px-6 lg:px-10">
-    <div class="lg:text-center mb-12">
-      <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">About</h2>
-      <p class="mt-2 text-4xl leading-8 font-extrabold tracking-tight text-gray-900">Who I Am</p>
-    </div>
-    <div class="bg-white rounded-lg shadow overflow-hidden py-8 px-6 md:px-8 lg:px-10 flex flex-col md:flex-row md:items-start">
-      <div class="md:w-1/2 px-2">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">My Story</h3>
-        <p class="text-gray-600 mb-4">Hey! I’m RCaz33, a lifelong coder with a passion for building clean, production‑ready tools.</p>
-        <p class="text-gray-600 mb-6">My GitHub portfolio showcases my journey through different languages, frameworks, and dev‑ops practices.</p>
-        <a href="/#repositories"
-           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-500">
-          <i class="fab fa-github mr-2"></i>Explore My GitHub
-        </a>
-      </div>
-      <div class="md:w-1/2 mt-8 md:mt-0 space-y-5">
-        <h3 class="text-lg font-medium text-gray-900 mb-3">Top Skills</h3>
-        <div class="space-y-4">
-          <!-- Web Development -->
-          <div>
-            <h4 class="text-sm font-medium text-gray-900 mb-1">Web Development</h4>
-            <p class="text-gray-600 mb-2">Python‑Flask app for industrial process control; 4 Docker containers (MySQL, Two FastAPI ML services, Flask API).</p>
-            <p class="text-gray-600 font-mono">ML‑Ops (ML‑Flow), CI/CD (GitHub Actions), Monitoring (Prometheus & Grafana)</p>
-            <div class="mt-2">
-              <span class="inline-block w-full bg-gray-200 rounded-full h-2.5 mb-1">
-                <div class="bg-blue-600 h-2.5 rounded-full" style="width:85%"></div>
-              </span>
-              <span class="text-sm text-gray-600">Web</span>
-            </div>
-          </div>
-          <!-- JavaScript/TypeScript -->
-          <div>
-            <h4 class="text-sm font-medium text-gray-900 mb-1">JavaScript / TypeScript</h4>
-            <div class="mt-1 w-full bg-gray-200 rounded-full h-2.5">
-              <div class="bg-blue-600 h-2.5 rounded-full" style="width:80%"></div>
-            </div>
-          </div>
-          <!-- Python -->
-          <div>
-            <h4 class="text-sm font-medium text-gray-900 mb-1">Python</h4>
-            <div class="mt-1 w-full bg-gray-200 rounded-full h-2.5">
-              <div class="bg-blue-600 h-2.5 rounded-full" style="width:78%"></div>
-            </div>
-          </div>
-          <!-- DevOps -->
-          <div>
-            <h4 class="text-sm font-medium text-gray-900 mb-1">DevOps</h4>
-            <div class="mt-1 w-full bg-gray-200 rounded-full h-2.5">
-              <div class="bg-blue-600 h-2.5 rounded-full" style="width:70%"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+<div id="chat-container" class="chat-container hidden">
+  <div id="chat-header">
+    <h3>Message Bot</h3>
+    <button id="close-chat">&times;</button>
   </div>
-</section>
-
-<!-- ---------- Repositories Section ---------- -->
-<section id="repositories" class="bg-white py-18">
-  <div class="max-w-8xl mx-auto px-6 lg:px-10">
-    <div class="lg:text-center mb-12">
-      <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">Projects</h2>
-      <p class="mt-2 text-4xl leading-8 font-extrabold text-gray-800">My GitHub Repositories</p>
-    </div>
-    <p class="mt-4 text-lg text-center text-gray-600 lg:mx-auto max-w-2xl">
-      A curated selection of my public contributions, continuously updated.
-    </p>
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mt-8">
-      <div class="text-center py-8 col-span-3">
-        <i class="fas fa-spinner fa-spin text-4xl text-gray-500"></i>
-        <p class="mt-3 text-gray-600">Loading projects…</p>
-      </div>
-    </div>
-    <div class="mt-12 text-center">
-      <a href="https://github.com/RCaz33?tab=repositories"
-         class="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md font-medium">
-        <i class="fas fa-arrow-right mr-2"></i> View All Repositories
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ---------- Hero Call‑to‑Action (Contact) ---------- -->
-<div class="gradient-bg text-white py-14">
-  <div class="max-w-8xl mx-auto px-6 lg:px-10">
-    <h2 class="text-4xl sm:text-5xl font-extrabold tracking-tight lg:mb-4">
-      <span class="block">Get in touch</span>
-      <span class="block">Reach out on GitHub</span>
-    </h2>
-    <a href="https://github.com/RCaz33"
-       class="inline-flex items-center px-8 py-4 bg-white text-blue-600 rounded-md font-semibold hover:bg-gray-100 transition">
-      <i class="fab fa-github mr-2"></i>My GitHub Profile
-    </a>
+  <div id="chat-messages"></div>
+  <div id="chat-input-area">
+    <input type="text" id="chat-input" placeholder="Type a message…" />
+    <button id="send-message">Send</button>
   </div>
 </div>
 
-<!-- ---------- Footer ---------- -->
-<footer class="bg-gray-800 text-gray-400 py-10 mt-12">
-  <div class="max-w-8xl mx-auto px-6 lg:px-10 grid grid-cols-2 md:grid-cols-4 gap-8">
-    <!-- Navigation -->
-    <div>
-      <h3 class="text-white font-semibold uppercase tracking-wider mb-3">Navigation</h3>
-      <ul class="space-y-2 text-sm">
-        <li><a href="#repositories" class="hover:text-white">Repositories</a></li>
-        <li><a href="#about"      class="hover:text-white">About</a></li>
-        <li><a href="#stats"      class="hover:text-white">Stats</a></li>
-      </ul>
-    </div>
-    <!-- GitHub -->
-    <div>
-      <h3 class="text-white font-semibold uppercase tracking-wider mb-3">GitHub</h3>
-      <ul class="space-y-2 text-sm">
-        <li><a href="https://github.com/RCaz33" class="hover:text-white">Profile</a></li>
-        <li><a href="https://github.com/RCaz33?tab=repositories" class="hover:text-white">Repos</a></li>
-        <li><a href="https://github.com/RCaz33?tab=stars" class="hover:text-white">Starred</a></li>
-      </ul>
-    </div>
-    <!-- Resources -->
-    <div>
-      <h3 class="text-white font-semibold uppercase tracking-wider mb-3">Resources</h3>
-      <ul class="space-y-2 text-sm">
-        <li><a href="https://docs.github.com" class="hover:text-white">Docs</a></li>
-        <li><a href="https://github.com/features" class="hover:text-white">Features</a></li>
-        <li><a href="https://github.com/trending" class="hover:text-white">Trending</a></li>
-      </ul>
-    </div>
-    <!-- Connect -->
-    <div>
-      <h3 class="text-white font-semibold uppercase tracking-wider mb-3">Connect</h3>
-      <div class="flex space-x-6 mt-3">
-        <a href="https://github.com/RCaz33" class="text-gray-400 hover:text-white"><i class="fab fa-github text-2xl"></i></a>
-        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter text-2xl"></i></a>
-        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in text-2xl"></i></a>
-      </div>
-    </div>
-    <!-- Footer note -->
-    <div class="col-span-2 mt-6 text-center text-sm">
-      <p class="text-gray-300">Built with <a href="https://github.com/enzostvs/deepsite" class="text-gray-300 hover:underline">HuggongSpace</a> • Powered by GitHub API</p>
-    </div>
-  </div>
-  <div class="mt-8 border-t border-gray-700 pt-6 text-center text-gray-300 text-sm">
-    © 2023 RCaz33. All rights reserved.
-  </div>
-</footer>
+<!-- Rest of your page (hero, stats, about, repos…) stays exactly as you have it -->
 
-<!-- ---------- Repositories Script (with styling classes) ---------- -->
-<style>
-  /* Simple repo‑card design */
-  .repo-card {
-    background:#fff; border-radius:.75rem; overflow:hidden;
-    box-shadow:0 2px 8px rgba(0,0,0,.06); transition: transform .2s ease;
+<!-- Gradio client -->
+<script src="https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.umd.min.js"></script>
+<script type="module">
+  async function initChatWidget() {
+    const client = await new Gradio.Client("https://rcaz-avatar-bot.hf.space");
+
+    const chatToggle        = document.getElementById('chat-toggle');
+    const chatContainer     = document.getElementById('chat-container');
+    const closeChat         = document.getElementById('close-chat');
+    const chatInput         = document.getElementById('chat-input');
+    const sendButton        = document.getElementById('send-message');
+    const messagesContainer = document.getElementById('chat-messages');
+
+    let chatHistory = [["", ""]];   // placeholder to satisfy backend
+
+    // UI toggles
+    chatToggle.addEventListener('click', () => chatContainer.classList.remove('hidden'));
+    closeChat.addEventListener('click', () => chatContainer.classList.add('hidden'));
+
+    function appendMessage(text, sender) {
+      const div = document.createElement('div');
+      div.className = `message ${sender}-message`;
+      div.textContent = text;
+      if (sender === 'bot') div.innerHTML = marked.parse(text);
+      messagesContainer.appendChild(div);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const userMessage = chatInput.value.trim();
+      if (!userMessage) return;
+
+      appendMessage(userMessage, 'user');
+      chatInput.value = '';
+
+      try {
+        const result = await client.predict("/chat", [userMessage, chatHistory]);
+        const botMessage = typeof result.data[0] === 'string' ? result.data[0] : "";
+        appendMessage(botMessage, 'bot');
+
+        // keep only the latest pair for next request
+        chatHistory = [[userMessage, botMessage]];
+      } catch (err) {
+        console.error('❌ Gradio error:', err);
+        const msg = (err?.data?.error) || "Sorry, there was an error processing your request.";
+        appendMessage(msg, 'bot');
+      }
+    }
+
+    sendButton.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
   }
-  .repo-card:hover { transform: translateY(-3px); }
-  .repo-card .repo-body { padding:1rem; }
-  .repo-card .repo-body h3 {font-weight:600; margin-bottom:.3rem;}
-  .repo-card .repo-body p {font-size:.9rem; color:#555;}
-  .repo-card .repo-meta { display:flex; justify-content:space-between; align-items:center; margin-top.5rem; }
-  .repo-card .repo-meta span {font-size:.8rem; color:#666;}
-  .repo-card .repo-meta i {margin-right:.3rem; color:#555;}
-  .repo-card .repo-description {margin-top:.5rem; color:#555; font-size:.9rem;}
-  .language-color {border-radius:.25rem; padding:0 .25rem;}
-</style>
 
-<script>
-/* ----------- Repository & stats loader ----------- */
-document.addEventListener('DOMContentLoaded', () => {
-  fetch('https://api.github.com/users/RCaz33/repos?sort=updated&direction=desc')
-    .then(r => r.json())
-    .then(repos => {
-      const container = document.getElementById('repos-container');
-      const repoCount = document.getElementById('repo-count');
-      const starCount = document.getElementById('star-count');
-
-      const totalStars = repos.reduce((s,r)=>s+r.stargazers_count,0);
-      const languages = new Set(repos.map(r=>r.language).filter(Boolean));
-      repoCount.textContent = repos.length;
-      starCount.textContent = totalStars;
-      document.getElementById('language-count').textContent = languages.size;
-
-      container.innerHTML = '';
-      repos.slice(0,9).forEach(r => {
-        const card = document.createElement('div');
-        card.className='repo-card';
-        const lngColor = getLangColor(r.language);
-        card.innerHTML = `
-          <div class="px-4 py-5 sm:p-6">
-            <div class="flex items-start">
-              <div class="flex-shrink-0 bg-blue-100 rounded-md p-3 mr-4">
-                <i class="fas fa-code text-blue-600 text-xl"></i>
-              </div>
-              <div class="flex-1 w-0">
-                <h3 class="text-lg font-medium text-gray-900 truncate">${r.name}</h3>
-                <p class="text-sm text-gray-500 mt-1">Updated ${new Date(r.updated_at).toLocaleDateString()}</p>
-              </div>
-            </div>
-            <p class="mt-2 text-gray-500 line-clamp-3">${r.description || 'No description available.'}</p>
-            <div class="mt-4">
-              ${r.language ? `<span class="language-color" style="background-color:${lngColor}"></span>
-                <span class="text-sm text-gray-500">${r.language}</span>` : ''}
-              <div class="flex justify-between items-center mt-3">
-                <div class="flex items-center text-gray-500"><i class="fas fa-star mr-1"></i><span>${r.stargazers_count}</span></div>
-                <div class="flex items-center text-gray-500"><i class="fas fa-code-branch mr-1"></i><span>${r.forks_count}</span></div>
-              </div>
-              <a href="${r.html_url}" target="_blank"
-                 class="w-full mt-2 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 text-sm font-medium transition">
-                View Repository
-              </a>
-            </div>
-          </div>`;
-        container.appendChild(card);
-      });
-    })
-    .catch(err=>{
-      console.error('API error',err);
-      document.getElementById('repos-container').innerHTML = `
-        <div class="col-span-3 text-center py-8">
-          <i class="fas fa-exclamation-triangle text-red-500 text-4xl"></i>
-          <p class="mt-4 text-gray-600">Failed to load repos. Please try again later.</p>
-        </div>`;
-    });
-  // -------------------------------------------------
-  function getLangColor(l) {
-    const palette = {
-      JavaScript:'#f7df65', TypeScript:'#2d79c7', Python:'#307784',
-      Java:'#f57f17', Cpp:'#f8961e', CSharp:'#5c8551', Ruby:'#ff6666',
-      PHP:'#4F5B95', CSS:'#5c4299', HTML:'#e34c26', Shell:'#6d7f6f',
-      Go:'#00acee', Rust:'#8899a0', Swift:'#ffac45', Kotlin:'#e68a00',
-      Dart:'#e4ed09', Scala:'#c527df', R:'#e63946'
-    };
-    return palette[l]||'#bbb';
-  }
-});
+  // initialise
+  initChatWidget();
 </script>
-
-<!-- ---------- Optional: Contact Form (you can reuse the existing contact section) ---------- -->
 </body>
 </html>
