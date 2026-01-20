@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   /* ---- Core layout helpers ---- */
-  .gradient-bg { background: linear-gradient(135deg, #6e5494, #4078c0); }
+  .gradient-bg { background: linear-gradient(135deg, #4078c0, #6e5494); }
   .text-gradient { background: linear-gradient(to right, #fafafa, #f5f5f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
   .shadow-hover:hover { box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1); transform: translateY(-3px); }
@@ -26,47 +26,78 @@ import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.m
 async function initChatWidget() {
   const client = await Client.connect("https://rcaz-avatar-bot.hf.space");
 
-  const toggle      = document.getElementById('chat-toggle');
-  const container   = document.getElementById('chat-container');
-  const closeChat   = document.getElementById('close-chat');
-  const input       = document.getElementById('chat-input');
-  const sendBtn     = document.getElementById('send-message');
-  const messagesDiv = document.getElementById('chat-messages');
+  const chatToggle   = document.getElementById('chat-toggle');
+  const chatContainer= document.getElementById('chat-container');
+  const closeChat    = document.getElementById('close-chat');
+  const chatInput    = document.getElementById('chat-input');
+  const sendButton   = document.getElementById('send-message');
+  const messagesContainer = document.getElementById('chat-messages');
 
-  let chatHistory = []; // keep track of the last user‑bot pair
+  // -----------------------------------------------------------------
+  // Keep the internal history that the backend expects
+  // -----------------------------------------------------------------
+  let chatHistory = [];   // e.g. [ [ "Hello", "Hi!" ], [ "How are you?", "I’m fine." ], … ]
 
-  toggle?.addEventListener('click', () => container.classList.remove('hidden'));
-  closeChat?.addEventListener('click', () => container.classList.add('hidden'));
+  // Toggle UI
+  chatToggle.addEventListener('click', () => chatContainer.classList.remove('hidden'));
+  closeChat.addEventListener('click', () => chatContainer.classList.add('hidden'));
 
-  function appendMessage(txt, sender) {
-    const el = document.createElement('div');
-    el.className = `message ${sender}-message`;
-    el.textContent = txt;
-    if (sender === 'bot') el.innerHTML = marked.parse(txt);
-    messagesDiv.appendChild(el);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  // --------------------------------------------------------------
+  // Append a bubble to the UI
+  // --------------------------------------------------------------
+  function appendMessage(text, sender) {
+    const div = document.createElement('div');
+    div.className = `message ${sender}-message`;
+    div.textContent = text;               // plain‑text for user
+    if (sender === 'bot') div.innerHTML = marked.parse(text); // markdown for bot
+    messagesContainer.appendChild(div);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
+  // --------------------------------------------------------------
+  // Send the user message → get a bot reply
+  // --------------------------------------------------------------
   async function sendMessage() {
-    const txt = input.value.trim(); if (!txt) return;
-    appendMessage(txt, 'user');
-    input.value = '';
+    const userMessage = chatInput.value.trim();
+    if (!userMessage) return;
+
+    // 1️⃣ Show user bubble immediately
+    appendMessage(userMessage, 'user');
+    chatInput.value = '';
 
     try {
-      const result = await client.predict('/chat', [txt, chatHistory]);
-      const botTxt = typeof result.data[0] === 'string' ? result.data[0] : '';
-      appendMessage(botTxt, 'bot');
-      chatHistory = [[txt, botTxt]];
-    } catch (e) {
-      console.error(e);
-      const errMsg = (e?.data?.error || "Sorry, something went wrong.") as string;
-      appendMessage(errMsg, 'bot');
+      // 2️⃣ Call the Gradio function with the correct argument list
+      const result = await client.predict("/chat", [userMessage, chatHistory]);
+
+      // 3️⃣ The response is a plain string in result.data[0]
+      const botMessage = typeof result.data[0] === 'string' ? result.data[0] : "";
+
+      // 4️⃣ Show bot bubble
+      appendMessage(botMessage, 'bot');
+
+      // 5️⃣ Update our local history for the next round
+      //    The demo stores the *whole* history in the second argument,
+      //    but we only need to keep the latest pair for next request.
+      chatHistory = [[userMessage, botMessage]];
+    } catch (err) {
+      console.error('❌ Gradio error:', err);   // <-- useful for debugging
+
+      // If the backend returned an error object (e.g. {"error":"…"}), surface it.
+      const message = (err?.data ?? {error:""}).error || "Sorry, there was an error processing your request.";
+      appendMessage(message, 'bot');
     }
   }
 
-  sendBtn?.addEventListener('click', sendMessage);
-  input?.addEventListener('keypress', e => e.key === 'Enter' && sendMessage());
+  // --------------------------------------------------------------
+  // UI bindings
+  // --------------------------------------------------------------
+  sendButton.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendMessage();
+  });
 }
+
+// Kick‑off the widget
 initChatWidget();
 </script>
 
