@@ -1,4 +1,3 @@
-@ -1,590 +1,677 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +29,7 @@
             display: inline-block;
             margin-right: 5px;
         }
-
+        
         .chat-widget {
             position: fixed; bottom: 24px; right: 24px;
             width: 56px; height: 56px; border-radius: 9999px;
@@ -40,45 +39,45 @@
             display: flex; align-items: center; justify-content: center;
             z-index: 1000;
           }
-      .chat-widget:hover { opacity: .96; }
-      .chat-container {
+        .chat-widget:hover { opacity: .96; }
+        .chat-container {
             position: fixed; bottom: 96px; right: 24px;
             width: 380px; height: 520px;
             background: #fff; border-radius: 16px;
             box-shadow: 0 25px 50px rgba(0,0,0,.2);
             display: flex; flex-direction: column; overflow: hidden;
           }
-      .chat-container.hidden { display: none; }
-      #chat-header {
+        .chat-container.hidden { display: none; }
+        #chat-header {
         padding: 14px 18px;
         background: linear-gradient(135deg, #4078c0, #6e5494);
         color: #fff; display: flex;
         justify-content: space-between; align-items: center;
-      }
-      #chat-header h3 {font-weight: 600;font-size: .95rem;}
-      #chat-header button {background: transparent; border: none; color: #fff; font-size: 20px;}
-      #chat-messages {
+        }
+        #chat-header h3 {font-weight: 600;font-size: .95rem;}
+        #chat-header button {background: transparent; border: none; color: #fff; font-size: 20px;}
+        #chat-messages {
         flex-grow: 1; overflow-y: auto; padding: 16px;
         background: #f8fafc;
-      }
-      #chat-input-area {
+        }
+        #chat-input-area {
         display: flex; gap: 10px; padding: 12px;
         border-top: 1px solid #e5e7eb;
-      }
-      #chat-input {
+        }
+        #chat-input {
         flex-grow: 1; padding: 10px 12px;
         border: 1px solid #d1d5db; border-radius: 9px;
         font-size: .95rem; background: #fff;
-      }
-      #send-message {
+        }
+        #send-message {
         background: #4078c0; color: #fff;
         border-radius: 9px; padding: 0 16px;
         font-size: .95rem; cursor: pointer;
-      }
-      .user-message { background: #ebf2ff; margin-left: auto; border-bottom-right-radius: .5rem; }
-      .bot-message { background: #f0f9ff; margin-right: auto; border-bottom-left-radius: .5rem;
+        }
+        .user-message { background: #ebf2ff; margin-left: auto; border-bottom-right-radius: .5rem; }
+        .bot-message { background: #f0f9ff; margin-right: auto; border-bottom-left-radius: .5rem;
                      box-shadow: 0 1px 4px rgba(0,0,0,.05); }
-    
+        
 
     </style>
     
@@ -193,88 +192,6 @@
         </div>
     </div>
 
-    <style>
-    .chat-widget {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-    }
-    
-    .chat-toggle {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: #007bff;
-        border: none;
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-    }
-    
-    .chat-container {
-        position: fixed;
-        bottom: 80px;
-        right: 20px;
-        width: 300px;
-        height: 400px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .chat-container.hidden {
-        display: none;
-    }
-    
-    #chat-header {
-        padding: 10px;
-        background: #007bff;
-        color: white;
-        border-radius: 10px 10px 0 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    #chat-messages {
-        flex-grow: 1;
-        overflow-y: auto;
-        padding: 10px;
-    }
-    
-    #chat-input-area {
-        padding: 10px;
-        border-top: 1px solid #eee;
-        display: flex;
-    }
-    
-    #chat-input {
-        flex-grow: 1;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        margin-right: 8px;
-    }
-    
-    .message {
-        margin: 8px 0;
-        padding: 8px;
-        border-radius: 4px;
-    }
-    
-    .user-message {
-        background: #e9ecef;
-        margin-left: 20px;
-    }
-    
-    .bot-message {
-        background: #f8f9fa;
-        margin-right: 20px;
-    }
-    </style>
 
     <!-- Hero Section -->
     <div class="gradient-bg text-white">
@@ -284,7 +201,7 @@
                     <img src="https://media.licdn.com/dms/image/v2/D4D03AQFDO8C5BkaPmA/profile-displayphoto-shrink_400_400/B4DZaBKSAHHwAk-/0/1745923678682?e=1752710400&v=beta&t=_prAmVCdmREgTBva9E9mEUdA-QfrYRgQlOofoty_Z7Q" alt="GitHub Avatar" class="h-full w-full object-cover">
                 </div>
                 <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-                    RCaz33's GitHub Portfolio
+                    GitHub Portfolio - Rémi Cazelles
                 </h1>
                 <p class="mt-6 max-w-lg mx-auto text-xl">
                     Exploring the world of code, one repository at a time.
