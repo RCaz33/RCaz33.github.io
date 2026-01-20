@@ -29,7 +29,6 @@
             display: inline-block;
             margin-right: 5px;
         }
-        
         .chat-widget {
             position: fixed; bottom: 24px; right: 24px;
             width: 56px; height: 56px; border-radius: 9999px;
@@ -38,7 +37,7 @@
             cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,.25);
             display: flex; align-items: center; justify-content: center;
             z-index: 1000;
-          }
+        }
         .chat-widget:hover { opacity: .96; }
         .chat-container {
             position: fixed; bottom: 96px; right: 24px;
@@ -46,42 +45,44 @@
             background: #fff; border-radius: 16px;
             box-shadow: 0 25px 50px rgba(0,0,0,.2);
             display: flex; flex-direction: column; overflow: hidden;
-          }
+        }
         .chat-container.hidden { display: none; }
         #chat-header {
-        padding: 14px 18px;
-        background: linear-gradient(135deg, #4078c0, #6e5494);
-        color: #fff; display: flex;
-        justify-content: space-between; align-items: center;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, #4078c0, #6e5494);
+            color: #fff; display: flex;
+            justify-content: space-between; align-items: center;
         }
         #chat-header h3 {font-weight: 600;font-size: .95rem;}
         #chat-header button {background: transparent; border: none; color: #fff; font-size: 20px;}
         #chat-messages {
-        flex-grow: 1; overflow-y: auto; padding: 16px;
-        background: #f8fafc;
+            flex-grow: 1; overflow-y: auto; padding: 16px;
+            background: #f8fafc;
         }
         #chat-input-area {
-        display: flex; gap: 10px; padding: 12px;
-        border-top: 1px solid #e5e7eb;
+            display: flex; gap: 10px; padding: 12px;
+            border-top: 1px solid #e5e7eb;
         }
         #chat-input {
-        flex-grow: 1; padding: 10px 12px;
-        border: 1px solid #d1d5db; border-radius: 9px;
-        font-size: .95rem; background: #fff;
+            flex-grow: 1; padding: 10px 12px;
+            border: 1px solid #d1d5db; border-radius: 9px;
+            font-size: .95rem; background: #fff;
         }
         #send-message {
-        background: #4078c0; color: #fff;
-        border-radius: 9px; padding: 0 16px;
-        font-size: .95rem; cursor: pointer;
+            background: #4078c0; color: #fff;
+            border-radius: 9px; padding: 0 16px;
+            font-size: .95rem; cursor: pointer;
         }
-        .user-message { background: #ebf2ff; margin-left: auto; border-bottom-right-radius: .5rem; }
-        .bot-message { background: #f0f9ff; margin-right: auto; border-bottom-left-radius: .5rem;
-                     box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+        .user-message { background: #ebf2ff; margin-left: auto; border-bottom-right-radius: .5rem; color: #334455 }
+        .bot-message {
+            background: #f0f9ff; margin-right: auto;
+            border-bottom-left-radius: .5rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,.05);
+            color: #334455;               /* ----- 1️⃣ darker bot‑message text ----- */
+        }
         
 
     </style>
-    
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script type="module">
         import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
         
@@ -115,25 +116,21 @@
           async function sendMessage() {
             const userMessage = chatInput.value.trim();
             if (!userMessage) return;
-        
+
             appendMessage(userMessage, 'user');
             chatInput.value = '';
-        
+
             try {
               const result = await client.predict("/chat", [userMessage, chatHistory]);
               const botMessage = typeof result.data[0] === 'string' ? result.data[0] : "";
               appendMessage(botMessage, 'bot');
               chatHistory = [[userMessage, botMessage]];
             } catch (err) {
-              console.error('Gradio error:', err);   // <--  for debugging
-        
+              console.error('Gradio error:', err);
               const message = (err?.data ?? {error:""}).error || "Sorry, there was an error processing your request.";
               appendMessage(message, 'bot');
-
-
             }
           }
-        
 
           sendButton.addEventListener('click', sendMessage);
           chatInput.addEventListener('keypress', e => {
@@ -143,7 +140,6 @@
         
         // Kick‑off the widget
         initChatWidget();
-    </script>
     </script>
 </head>
     
@@ -177,22 +173,7 @@
             </div>
         </div>
     </nav>
-    <div id="chat-widget" class="chat-widget">
-        <button id="chat-toggle" class="chat-toggle">💬</button>
-        <div id="chat-container" class="chat-container hidden">
-            <div id="chat-header">
-                <h3>Gradio Assistant</h3>
-                <button id="close-chat">×</button>
-            </div>
-            <div id="chat-messages"></div>
-            <div id="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ask a question...">
-                <button id="send-message">Send</button>
-            </div>
-        </div>
-    </div>
-
-
+    
     <!-- Hero Section -->
     <div class="gradient-bg text-white">
         <div class="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
@@ -207,10 +188,18 @@
                     Exploring the world of code, one repository at a time.
                 </p>
                 <div class="mt-10 flex justify-center space-x-4">
-                    <a href="#repositories" class="pulse bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-md text-lg font-bold shadow-lg">
+                    <a href="#repositories"
+                       class="pulse bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-md text-lg font-bold shadow-lg">
                         My Repositories <i class="fas fa-arrow-down ml-2"></i>
                     </a>
-                    <a href="https://github.com/RCaz33?tab=repositories" class="border border-white text-white hover:bg-blue-700 px-8 py-4 rounded-md text-lg font-medium">
+                    <!-- 2️⃣  Open Chatbot button – placed to the right of the GitHub link -->
+                    <a href="#"
+                       class="px-8 py-4 rounded-md text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 flex items-center justify-center"
+                       onclick="document.getElementById('chat-toggle').click();return false;">
+                        <i class="fas fa-comments ml-2"></i> Open Chatbot
+                    </a>
+                    <a href="https://github.com/RCaz33?tab=repositories"
+                       class="border border-white text-white hover:bg-blue-700 px-8 py-4 rounded-md text-lg font-medium">
                         <i class="fab fa-github mr-2"></i> GitHub
                     </a>
                 </div>
@@ -285,10 +274,10 @@
                         <div class="space-y-4">
                             <div>
                                 <h4 class="text-sm font-medium text-gray-900">Web Development</h4>
-                                            <p>A web application built with Python and Flask for managing industrial production process.</p>
-            <p>Orchestration of 4 docker containers to handle MySQL-bdd, 2 FastAPI serving ML-models and BDD, a Flask-APP</p>
-            <p>ML-Ops with ML-FLow, CD/CI with github actions, Monitoring with Prometheus & Graphana</p>
-            <p>Technologies: Python, Flask, FastAPI, ML-Flow, HTML, CSS, JavaScript</p>
+                                <p>A web application built with Python and Flask for managing industrial production process.</p>
+                                <p>Orchestration of 4 docker containers to handle MySQL-bdd, 2 FastAPI serving ML-models and BDD, a Flask-APP</p>
+                                <p>ML-Ops with ML-Flow, CD/CI with github actions, Monitoring with Prometheus & Graphana</p>
+                                <p>Technologies: Python, Flask, FastAPI, ML-Flow, HTML, CSS, JavaScript</p>
                                 <div class="mt-1 w-full bg-gray-200 rounded-full h-2.5">
                                     <div class="bg-blue-600 h-2.5 rounded-full" style="width: 85%"></div>
                                 </div>
@@ -332,15 +321,16 @@
             </div>
 
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" id="repos-container">
-                <!-- Repositories will be loaded here by JavaScript -->
-                <div class="text-center py-8">
+                <!-- Repositories will be injected by JavaScript -->
+                <div class="text-center py-8 col-span-3">
                     <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
                     <p class="mt-4 text-gray-600">Loading repositories...</p>
                 </div>
             </div>
 
             <div class="mt-12 text-center">
-                <a href="https://github.com/RCaz33?tab=repositories" class="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md text-lg font-medium">
+                <a href="https://github.com/RCaz33?tab=repositories"
+                   class="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md text-lg font-medium">
                     View All Repositories <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
@@ -356,7 +346,8 @@
             </h2>
             <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
                 <div class="inline-flex rounded-md shadow">
-                    <a href="https://github.com/RCaz33" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-md text-blue-600 bg-white hover:bg-gray-50">
+                    <a href="https://github.com/RCaz33"
+                       class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-md text-blue-600 bg-white hover:bg-gray-50">
                         <i class="fab fa-github mr-2"></i> GitHub Profile
                     </a>
                 </div>
@@ -420,44 +411,111 @@
         </div>
     </footer>
 
+    <!-- Marked library (Markdown parser) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fetch GitHub repositories
+        import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+        async function initChatWidget() {
+          const client = await Client.connect("https://rcaz-avatar-bot.hf.space");
+        
+          const chatToggle   = document.getElementById('chat-toggle');
+          const chatContainer= document.getElementById('chat-container');
+          const closeChat    = document.getElementById('close-chat');
+          const chatInput    = document.getElementById('chat-input');
+          const sendButton   = document.getElementById('send-message');
+          const messagesContainer = document.getElementById('chat-messages');
+        
+
+          let chatHistory = [["","Ask anything about Rémi Cazelles"]];   
+        
+          chatToggle.addEventListener('click', () => chatContainer.classList.remove('hidden'));
+          closeChat.addEventListener('click', () => chatContainer.classList.add('hidden'));
+        
+
+          function appendMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.textContent = text;               
+            if (sender === 'bot') div.innerHTML = marked.parse(text); 
+            messagesContainer.appendChild(div);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          }
+        
+
+          async function sendMessage() {
+            const userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+
+            appendMessage(userMessage, 'user');
+            chatInput.value = '';
+
+            try {
+              const result = await client.predict("/chat", [userMessage, chatHistory]);
+              const botMessage = typeof result.data[0] === 'string' ? result.data[0] : "";
+              appendMessage(botMessage, 'bot');
+              chatHistory = [[userMessage, botMessage]];
+            } catch (err) {
+              console.error('Gradio error:', err);   // <--  for debugging
+
+              const message = (err?.data ?? {error:""}).error || "Sorry, there was an error processing your request.";
+              appendMessage(message, 'bot');
+            }
+          }
+
+          sendButton.addEventListener('click', sendMessage);
+          chatInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMessage();
+          });
+        }
+
+        // Kick‑off the widget
+        initChatWidget();
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            /* ---------- 1️⃣ Stats elements ---------- */
+            const repoCount   = document.getElementById('repo-count');
+            const starCount   = document.getElementById('star-count');
+
+            /* ---------- 2️⃣ Helper to fetch & render README ---------- */
+            async function fetchReadmeHtml(repo) {
+                const rawUrl = `https://raw.githubusercontent.com/RCaz33/${repo.name}/main/README.md`;
+                try {
+                    const resp = await fetch(rawUrl);
+                    if (!resp.ok) throw new Error('missing');
+                    const markdown = await resp.text();
+                    // Convert Markdown → HTML using the global `marked` library
+                    return marked.parse(markdown);
+                } catch (_) {
+                    return '<p class="text-red-500">README not found</p>';
+                }
+            }
+
+            /* ---------- 3️⃣ Fetch repos & build cards ---------- */
             fetch('https://api.github.com/users/RCaz33/repos?sort=updated&direction=desc')
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(repos => {
-                    const reposContainer = document.getElementById('repos-container');
-                    const repoCount = document.getElementById('repo-count');
-                    const starCount = document.getElementById('star-count');
-                    
-                    // Calculate total stars
-                    const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
-                    
-                    // Count unique languages
-                    const languages = new Set();
-                    repos.forEach(repo => {
-                        if (repo.language) {
-                            languages.add(repo.language);
-                        }
-                    });
-                    
-                    // Update stats
+                    // ---- Update stats ----
+                    const totalStars = repos.reduce((sum, r) => sum + r.stargazers_count, 0);
+                    const uniqueLangs = new Set();
+                    repos.forEach(r => { if (r.language) uniqueLangs.add(r.language); });
                     repoCount.textContent = repos.length;
                     starCount.textContent = totalStars;
-                    document.getElementById('language-count').textContent = languages.size;
-                    
-                    // Clear loading message
-                    reposContainer.innerHTML = '';
-                    
-                    // Display first 6 repositories
+                    document.getElementById('language-count').textContent = uniqueLangs.size;
+
+                    // ---- Clear placeholder loading message ----
+                    const container = document.getElementById('repos-container');
+                    container.innerHTML = '';
+
+                    // ---- Load the first 6 repos ----
                     repos.slice(0, 6).forEach(repo => {
-                        const repoCard = document.createElement('div');
-                        repoCard.className = 'repo-card bg-gray-50 overflow-hidden shadow rounded-lg transition duration-300 ease-in-out';
-                        
-                        // Get language color (this is a simplified approach)
-                        const languageColor = getLanguageColor(repo.language);
-                        
-                        repoCard.innerHTML = `
+                        const card = document.createElement('div');
+                        card.className = 'repo-card bg-gray-50 overflow-hidden shadow rounded-lg transition duration-300 ease-in-out';
+
+                        // ---- Card markup (includes collapsible README placeholder) ----
+                        card.innerHTML = `
                             <div class="px-4 py-5 sm:p-6">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
@@ -465,69 +523,88 @@
                                     </div>
                                     <div class="ml-5 w-0 flex-1">
                                         <h3 class="text-lg font-medium text-gray-900 truncate">${repo.name}</h3>
-                                        <p class="mt-1 text-sm text-gray-500">Updated ${formatDate(repo.updated_at)}</p>
+                                        <p class="mt-1 text-sm text-gray-500">Updated ${new Date(repo.updated_at).toLocaleDateString()}</p>
                                     </div>
                                 </div>
                                 <div class="mt-4">
                                     <p class="text-gray-600">${repo.description || 'No description provided.'}</p>
                                 </div>
                                 <div class="mt-6 flex justify-between items-center">
-                                    <div class="flex items-center">
-                                        ${repo.language ? `
-                                        <span class="language-color" style="background-color: ${languageColor};"></span>
+                                    ${repo.language ? `
+                                        <span class="language-color" style="background-color: ${getLanguageColor(repo.language)}"></span>
                                         <span class="text-sm text-gray-500">${repo.language}</span>
-                                        ` : ''}
+                                    ` : ''}
+                                </div>
+                                <div class="mt-6 flex items-center space-x-4">
+                                    <div class="flex items-center text-gray-500 text-sm">
+                                        <i class="fas fa-star mr-1"></i>
+                                        <span>${repo.stargazers_count}</span>
                                     </div>
-                                    <div class="flex items-center space-x-4">
-                                        <div class="flex items-center text-gray-500 text-sm">
-                                            <i class="fas fa-star mr-1"></i>
-                                            <span>${repo.stargazers_count}</span>
-                                        </div>
-                                        <div class="flex items-center text-gray-500 text-sm">
-                                            <i class="fas fa-code-branch mr-1"></i>
-                                            <span>${repo.forks_count}</span>
-                                        </div>
+                                    <div class="flex items-center text-gray-500 text-sm">
+                                        <i class="fas fa-code-branch mr-1"></i>
+                                        <span>${repo.forks_count}</span>
                                     </div>
                                 </div>
                                 <div class="mt-4">
-                                    <a href="${repo.html_url}" target="_blank" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    <a href="${repo.html_url}" target="_blank"
+                                       class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                         View Repository
                                     </a>
                                 </div>
+
+                                <!-- ==== 3️⃣ Collapsible README block ==== -->
+                                <div class="mt-6 border-t border-gray-200 rounded">
+                                    <div class="cursor-pointer font-medium text-blue-600 hover:text-blue-800 flex justify-between py-2">
+                                        <span>Toggle README</span>
+                                        <i class="fas fa-angle-down"></i>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded text-sm mt-1 hidden readme-content"></div>
+                                </div>
+                                <!-- ==== End of collapsible README ==== -->
                             </div>
                         `;
-                        
-                        reposContainer.appendChild(repoCard);
+
+                        // ---- Attach toggle logic & fetch README when needed ----
+                        const toggleBtn = card.querySelector('.cursor-pointer');
+                        const readmeBox = card.querySelector('.readme-content');
+                        toggleBtn.addEventListener('click', async () => {
+                            if (readmeBox.classList.contains('hidden')) {
+                                const html = await fetchReadmeHtml(repo);
+                                readmeBox.innerHTML = html;
+                                readmeBox.classList.remove('hidden');
+                                readmeBox.querySelector('.fa-angle-down').style.transform = 'rotate(180deg)';
+                            } else {
+                                readmeBox.classList.add('hidden');
+                                readmeBox.querySelector('.fa-angle-down').style.transform = 'rotate(0deg)';
+                            }
+                        });
+
+                        container.appendChild(card);
                     });
                 })
-                .catch(error => {
-                    console.error('Error fetching GitHub data:', error);
+                .catch(err => {
+                    console.error('Error fetching GitHub data:', err);
                     document.getElementById('repos-container').innerHTML = `
                         <div class="text-center py-8 col-span-3">
                             <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
                             <p class="mt-4 text-gray-600">Failed to load repositories. Please try again later.</p>
-                        </div>
-                    `;
+                        </div>`;
                 });
-                
-            // Format date to relative time
+
+            /* ---------- 4️⃣ Helper utilities ---------- */
             function formatDate(dateString) {
-                const date = new Date(dateString);
+                const d = new Date(dateString);
                 const now = new Date();
-                const diffInSeconds = Math.floor((now - date) / 1000);
-                
-                if (diffInSeconds < 60) return 'just now';
-                if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-                if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-                if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-                if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
-                return `${Math.floor(diffInSeconds / 31536000)} years ago`;
+                const diffSec = Math.floor((now - d) / 1000);
+                if (diffSec < 60) return 'just now';
+                if (diffSec < 3600) return `${Math.floor(diffSec / 60)} minutes ago`;
+                if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} hours ago`;
+                if (diffSec < 2592000) return `${Math.floor(diffSec / 86400)} days ago`;
+                if (diffSec < 31536000) return `${Math.floor(diffSec / 2592000)} months ago`;
+                return `${Math.floor(diffSec / 31536000)} years ago`;
             }
-            
-            // Simplified language color mapping
+
             function getLanguageColor(language) {
-                if (!language) return '#ccc';
-                
                 const colors = {
                     'JavaScript': '#f1e05a',
                     'TypeScript': '#3178c6',
@@ -548,7 +625,6 @@
                     'Scala': '#c22d40',
                     'R': '#198CE7'
                 };
-                
                 return colors[language] || '#ccc';
             }
         });
