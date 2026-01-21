@@ -67,17 +67,29 @@
         #chat-input {
         flex-grow: 1; padding: 10px 12px;
         border: 1px solid #d1d5db; border-radius: 9px;
-        font-size: .55rem; background: #fff;color: #334455;
+        font-size: .75rem; background: #fff;color: #334455;
         }
         #send-message {
         background: #4078c0; color: #fff;
         border-radius: 9px; padding: 0 16px;
-        font-size: .55rem; cursor: pointer;
+        font-size: .75rem; cursor: pointer;
         }
         .user-message { background: #ebf2ff; margin-left: auto; border-bottom-right-radius: .25rem; color: #334455}
         .bot-message { background: #f0f9ff; margin-right: auto; border-bottom-left-radius: .25rem;
                      box-shadow: 0 1px 4px rgba(0,0,0,.05);color: #334455 }
-        
+        .example-btn {
+          display: block;
+          width: 100%;
+          margin: 0.4rem 0;
+          padding: 0.5rem;
+          background: #f1f8e9;
+          border: 1px solid #ccc;
+          border-radius: 0.3rem;
+          cursor: pointer;
+        }
+        .example-btn:hover {
+          background: #e0e7d5;
+        }
 
     </style>
     
@@ -133,7 +145,14 @@
 
             }
           }
-        
+        document.querySelectorAll('#chat-examples .example-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            // Pre‑fill the input with the clicked example
+            chatInput.value = btn.textContent;
+            sendMessage();                 // automatically fires the send‑logic
+          });
+        });
+
 
           sendButton.addEventListener('click', sendMessage);
           chatInput.addEventListener('keypress', e => {
@@ -187,6 +206,13 @@
                 <button id="close-chat">×</button>
             </div>
             <div id="chat-messages"></div>
+
+            <div id="chat-examples" style="margin: 0.8rem 0; text-align: left;">
+              <button class="example-btn">How many years of experience does Rémi have in python?</button>
+              <button class="example-btn">When did Rémi graduate from his doctorate?</button>
+              <button class="example-btn">I have a project in DataENgineering using Microsoft Fabrics …</button>
+            </div>
+            
             <div id="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Ask a question...">
                 <button id="send-message">Send</button>
