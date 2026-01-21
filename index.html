@@ -433,196 +433,196 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Fetch GitHub repositories
-            fetch('https://api.github.com/users/RCaz33/repos?sort=updated&direction=desc')
-                .then(response => response.json())
-                .then(repos => {
-                    const reposContainer = document.getElementById('repos-container');
-                    const repoCount = document.getElementById('repo-count');
-                    const starCount = document.getElementById('star-count');
-                    
-                    // Calculate total stars
-                    const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
-                    
-                    // Count unique languages
-                    const languages = new Set();
-                    repos.forEach(repo => {
-                        if (repo.language) {
-                            languages.add(repo.language);
-                        }
-                    });
-                    
-                    // Update stats
-                    repoCount.textContent = repos.length;
-                    starCount.textContent = totalStars;
-                    document.getElementById('language-count').textContent = languages.size;
-                    
-                    // Clear loading message
-                    document.addEventListener('DOMContentLoaded', function () {
-                    
-                        repos.slice(0, 12).forEach(repo => {
-                            const repoCard = document.createElement('div');
-                            repoCard.className = 'repo-card bg-gray-50 overflow-hidden shadow rounded-lg transition duration-300 ease-in-out';
-                    
-                            // Get language color (unchanged)
-                            const languageColor = getLanguageColor(repo.language);
-                    
-                            // 👉 NEW: placeholder for the README description
-                            let readmeHTML = '';
-                    
-                            /* --------------------------------------------------------------
-                             *  Load the README (or a short auto‑generated description) 
-                             * -------------------------------------------------------------- */
-                            if (repo.description && repo.description.trim().length > 0) {
-                                // Use the repository “description” field when available
-                                const descriptionText = repo.description.replace(/\n/g, '<br>');
-                                readmeHTML = `
-                                    <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
-                                        <summary class="font-medium text-gray-800">Description</summary>
-                                        ${descriptionText}
-                                    </details>
-                                `;
-                            } else {
-                                // Fall back to fetching the raw README
-                                fetch(`https://api.github.com/repos/RCaz33/${repo.name}/readme`)
-                                    .then(r => {
-                                        if (!r.ok) throw new Error('README not found');
-                                        return r.json();
-                                    })
-                                    .then(data => {
-                                        const rawUrl = data.download_url;           // raw markdown URL
-                                        if (!rawUrl) throw new Error('No download URL');
-                                        return fetch(rawUrl).then(r => r.text());
-                                    })
-                                    .then(md => {
-                                        // Very light Markdown → HTML conversion (only headings & lists)
-                                        const html = md
-                                            .replace(/^(#{1,3})\s+(.*)/gm, '<h2>$1 $2</h2>')   // support ### as h2
-                                            .replace(/^-\s+(.*)$/gm, '<li>$1</li>')            // bullet → <li>
-                                            .replace(/(?:^|[^a-zA-Z0-9_])!\[([^\]]+)\]\(([^)]+)\)/g, '$1<img src="$2" alt="$1" style="max-width:100%;"/>')
-                                            .replace(/(?:^|[^a-zA-Z0-9_])\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-                    
-                                        readmeHTML = `
-                                            <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
-                                                <summary class="font-medium text-gray-800">README excerpt</summary>
-                                                ${html}
-                                            </details>
-                                        `;
-                                        // Inject when ready
-                                        injectReadme(repoCard, readmeHTML);
-                                    })
-                                    .catch(err => {
-                                        console.warn('README fetch failed for', repo.name, err);
-                                        readmeHTML = `
-                                            <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
-                                                <summary class="font-medium text-gray-800">README not available</summary>
-                                                <p class="text-gray-600">You can view the repo on GitHub.</p>
-                                            </details>
-                                        `;
-                                        injectReadme(repoCard, readmeHTML);
-                                    });
-                            }
-                    
-                            // Build the static parts of the card
-                            repoCard.innerHTML = `
-                                <div class="px-4 py-5 sm:p-6">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
-                                            <i class="fas fa-code text-blue-600 text-xl"></i>
-                                        </div>
-                                        <div class="ml-5 w-0 flex-1">
-                                            <h3 class="text-lg font-medium text-gray-900 truncate">${repo.name}</h3>
-                                            <p class="mt-1 text-sm text-gray-500">Updated ${formatDate(repo.updated_at)}</p>
-                                        </div>
+        // Fetch GitHub repositories
+        fetch('https://api.github.com/users/RCaz33/repos?sort=updated&direction=desc')
+            .then(response => response.json())
+            .then(repos => {
+                const reposContainer = document.getElementById('repos-container');
+                const repoCount = document.getElementById('repo-count');
+                const starCount = document.getElementById('star-count');
+                
+                // Calculate total stars
+                const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+                
+                // Count unique languages
+                const languages = new Set();
+                repos.forEach(repo => {
+                    if (repo.language) {
+                        languages.add(repo.language);
+                    }
+                });
+                
+                // Update stats
+                repoCount.textContent = repos.length;
+                starCount.textContent = totalStars;
+                document.getElementById('language-count').textContent = languages.size;
+                
+                // Clear loading message - THIS WAS MISSING!
+                reposContainer.innerHTML = '';
+                
+                // Display repositories
+                repos.slice(0, 12).forEach(repo => {
+                    const repoCard = document.createElement('div');
+                    repoCard.className = 'repo-card bg-gray-50 overflow-hidden shadow rounded-lg transition duration-300 ease-in-out';
+            
+                    // Get language color
+                    const languageColor = getLanguageColor(repo.language);
+            
+                    // Placeholder for README
+                    let readmeHTML = '<div class="placeholder-readme"></div>';
+            
+                    // Build the card structure first
+                    repoCard.innerHTML = `
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+                                    <i class="fas fa-code text-blue-600 text-xl"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <h3 class="text-lg font-medium text-gray-900 truncate">${repo.name}</h3>
+                                    <p class="mt-1 text-sm text-gray-500">Updated ${formatDate(repo.updated_at)}</p>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <p class="text-gray-600">${repo.description || 'No description provided.'}</p>
+                            </div>
+                            ${readmeHTML}
+                            <div class="mt-6 flex justify-between items-center">
+                                <div class="flex items-center">
+                                    ${repo.language ? `
+                                    <span class="language-color" style="background-color: ${languageColor};"></span>
+                                    <span class="text-sm text-gray-500">${repo.language}</span>
+                                    ` : ''}
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex items-center text-gray-500 text-sm">
+                                        <i class="fas fa-star mr-1"></i>
+                                        <span>${repo.stargazers_count}</span>
                                     </div>
-                                    <div class="mt-4">
-                                        <p class="text-gray-600">${repo.description || 'No description provided.'}</p>
-                                    </div>
-                                    ${readmeHTML}
-                                    <div class="mt-6 flex justify-between items-center">
-                                        <div class="flex items-center">
-                                            ${repo.language ? `
-                                            <span class="language-color" style="background-color: ${languageColor};"></span>
-                                            <span class="text-sm text-gray-500">${repo.language}</span>
-                                            ` : ''}
-                                        </div>
-                                        <div class="flex items-center space-x-4">
-                                            <div class="flex items-center text-gray-500 text-sm">
-                                                <i class="fas fa-star mr-1"></i>
-                                                <span>${repo.stargazers_count}</span>
-                                            </div>
-                                            <div class="flex items-center text-gray-500 text-sm">
-                                                <i class="fas fa-code-branch mr-1"></i>
-                                                <span>${repo.forks_count}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-4">
-                                        <a href="${repo.html_url}" target="_blank" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                            View Repository
-                                        </a>
+                                    <div class="flex items-center text-gray-500 text-sm">
+                                        <i class="fas fa-code-branch mr-1"></i>
+                                        <span>${repo.forks_count}</span>
                                     </div>
                                 </div>
-                            `;
-                    
-                            reposContainer.appendChild(repoCard);
-                        });
-                    
-                        /* -----------------------------------------------------------------
-                         *  Helper: inject the async‑loaded README block into the card
-                         * ----------------------------------------------------------------- */
-                        function injectReadme(cardElement, markdownHTML) {
-                            // The fetch that pulls the README runs after the card is already appended.
-                            // We simply replace the placeholder (which is an empty string) with the real HTML.
-                            const placeholder = cardElement.querySelector('.placeholder-readme');
-                            if (placeholder) {
-                                placeholder.innerHTML = markdownHTML;
-                            }
-                        }
-
-                
-            // Format date to relative time
-            function formatDate(dateString) {
-                const date = new Date(dateString);
-                const now = new Date();
-                const diffInSeconds = Math.floor((now - date) / 1000);
-                
-                if (diffInSeconds < 60) return 'just now';
-                if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-                if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-                if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-                if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
-                return `${Math.floor(diffInSeconds / 31536000)} years ago`;
-            }
+                            </div>
+                            <div class="mt-4">
+                                <a href="${repo.html_url}" target="_blank" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    View Repository
+                                </a>
+                            </div>
+                        </div>
+                    `;
             
-            // Simplified language color mapping
-            function getLanguageColor(language) {
-                if (!language) return '#ccc';
-                
-                const colors = {
-                    'JavaScript': '#f1e05a',
-                    'TypeScript': '#3178c6',
-                    'Python': '#3572A5',
-                    'Java': '#b07219',
-                    'C++': '#f34b7d',
-                    'C#': '#178600',
-                    'Ruby': '#701516',
-                    'PHP': '#4F5D95',
-                    'CSS': '#563d7c',
-                    'HTML': '#e34c26',
-                    'Shell': '#89e051',
-                    'Go': '#00ADD8',
-                    'Rust': '#dea584',
-                    'Swift': '#ffac45',
-                    'Kotlin': '#F18E33',
-                    'Dart': '#00B4AB',
-                    'Scala': '#c22d40',
-                    'R': '#198CE7'
-                };
-                
-                return colors[language] || '#ccc';
-            }
+                    // Append the card to the container
+                    reposContainer.appendChild(repoCard);
+            
+                    // Load README asynchronously
+                    if (repo.description && repo.description.trim().length > 0) {
+                        const descriptionText = repo.description.replace(/\n/g, '<br>');
+                        const readmeContent = `
+                            <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
+                                <summary class="font-medium text-gray-800 cursor-pointer">Description</summary>
+                                <div class="mt-2 text-sm text-gray-600">${descriptionText}</div>
+                            </details>
+                        `;
+                        const placeholder = repoCard.querySelector('.placeholder-readme');
+                        if (placeholder) placeholder.innerHTML = readmeContent;
+                    } else {
+                        // Fetch README from GitHub API
+                        fetch(`https://api.github.com/repos/RCaz33/${repo.name}/readme`)
+                            .then(r => {
+                                if (!r.ok) throw new Error('README not found');
+                                return r.json();
+                            })
+                            .then(data => {
+                                const rawUrl = data.download_url;
+                                if (!rawUrl) throw new Error('No download URL');
+                                return fetch(rawUrl).then(r => r.text());
+                            })
+                            .then(md => {
+                                // Simple Markdown to HTML conversion
+                                const html = md
+                                    .substring(0, 500) // Limit length
+                                    .replace(/^(#{1,3})\s+(.*)/gm, '<h3 class="font-semibold mt-2">$2</h3>')
+                                    .replace(/^-\s+(.*)$/gm, '<li class="ml-4">$1</li>')
+                                    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                                    .replace(/\n/g, '<br>');
+            
+                                const readmeContent = `
+                                    <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
+                                        <summary class="font-medium text-gray-800 cursor-pointer">README excerpt</summary>
+                                        <div class="mt-2 text-sm text-gray-600">${html}...</div>
+                                    </details>
+                                `;
+                                const placeholder = repoCard.querySelector('.placeholder-readme');
+                                if (placeholder) placeholder.innerHTML = readmeContent;
+                            })
+                            .catch(err => {
+                                console.warn('README fetch failed for', repo.name, err);
+                                const placeholder = repoCard.querySelector('.placeholder-readme');
+                                if (placeholder) placeholder.innerHTML = '';
+                            });
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching repositories:', error);
+                const reposContainer = document.getElementById('repos-container');
+                reposContainer.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <i class="fas fa-exclamation-triangle text-4xl text-red-600"></i>
+                        <p class="mt-4 text-gray-600">Error loading repositories. Please try again later.</p>
+                    </div>
+                `;
+            });
+        
+        // Format date to relative time
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) return 'just now';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+            if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+            if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
+            return `${Math.floor(diffInSeconds / 31536000)} years ago`;
+        }
+        
+        // Simplified language color mapping
+        function getLanguageColor(language) {
+            if (!language) return '#ccc';
+            
+            const colors = {
+                'JavaScript': '#f1e05a',
+                'TypeScript': '#3178c6',
+                'Python': '#3572A5',
+                'Java': '#b07219',
+                'C++': '#f34b7d',
+                'C#': '#178600',
+                'Ruby': '#701516',
+                'PHP': '#4F5D95',
+                'CSS': '#563d7c',
+                'HTML': '#e34c26',
+                'Shell': '#89e051',
+                'Go': '#00ADD8',
+                'Rust': '#dea584',
+                'Swift': '#ffac45',
+                'Kotlin': '#F18E33',
+                'Dart': '#00B4AB',
+                'Scala': '#c22d40',
+                'R': '#198CE7'
+            };
+            
+            return colors[language] || '#ccc';
+        }
+        
+        // Chat widget open button
+        document.getElementById('open-chat-widget')?.addEventListener('click', function() {
+            document.getElementById('chat-container').classList.remove('hidden');
         });
+    });
     </script>
 </body>
 </html>
