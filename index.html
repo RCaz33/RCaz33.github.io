@@ -283,12 +283,11 @@
                         </p>
                         <p class="text-gray-600 mb-4">
                             My repositories showcase my journey through different programming languages, frameworks, and tools as I continue to learn and grow.
-                            FullStack Dev [Python, Flask, FastAPI, SQL, ML-Flow, HTML, Prometheus, Graphana, GitHub]
-                            Extract Transform Load (ETL) [Python, streamlit, numpy, pandas, scipy, sklearn, matplotlib, seaborn, openpyxl]
-                            Machine Learning Ingineering [Python, sklearn, Random Forest, Reservoir Computing]
-                            Neural network (CNN, XAI) [Keras, VGG, Inception, Optuna, LIME, GradCam]
-                            GenIA (RAG) [smolagent, Langchain, LangGraph, LangFuse]
                         </p>
+                        <p>A web application built with Python and Flask for managing industrial production process.</p>
+                        <p>Orchestration of 4 docker containers to handle MySQL-bdd, 2 FastAPI serving ML-models and BDD, a Flask-APP</p>
+                        <p>ML-Ops with ML-FLow, CD/CI with github actions, Monitoring with Prometheus & Graphana</p>
+                        <p>Technologies: Python, Git, Docker, Azure, SQL, Spark, ML-Flow, Databricks</p>
                         <div class="mt-6">
                             <a href="https://github.com/RCaz33?tab=repositories" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
                                 <i class="fab fa-github mr-2"></i> Explore My GitHub
@@ -298,10 +297,7 @@
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Top Skills</h3>
                         <div class="space-y-4">
-                                <p>A web application built with Python and Flask for managing industrial production process.</p>
-                                <p>Orchestration of 4 docker containers to handle MySQL-bdd, 2 FastAPI serving ML-models and BDD, a Flask-APP</p>
-                                <p>ML-Ops with ML-FLow, CD/CI with github actions, Monitoring with Prometheus & Graphana</p>
-                                <p>Technologies: Python, Git, Docker, Azure, SQL, Spark, ML-Flow, Databricks</p>
+                                
                             <div>
                                 <h4 class="text-sm font-medium text-gray-900">Python - Git</h4>
                                 <div class="mt-1 w-full bg-gray-200 rounded-full h-2.5">
@@ -462,68 +458,128 @@
                     document.getElementById('language-count').textContent = languages.size;
                     
                     // Clear loading message
-                    reposContainer.innerHTML = '';
+                    document.addEventListener('DOMContentLoaded', function () {
                     
-                    // Display first 6 repositories
-                    repos.slice(0, 6).forEach(repo => {
-                        const repoCard = document.createElement('div');
-                        repoCard.className = 'repo-card bg-gray-50 overflow-hidden shadow rounded-lg transition duration-300 ease-in-out';
-                        
-                        // Get language color (this is a simplified approach)
-                        const languageColor = getLanguageColor(repo.language);
-                        
-                        repoCard.innerHTML = `
-                            <div class="px-4 py-5 sm:p-6">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
-                                        <i class="fas fa-code text-blue-600 text-xl"></i>
-                                    </div>
-                                    <div class="ml-5 w-0 flex-1">
-                                        <h3 class="text-lg font-medium text-gray-900 truncate">${repo.name}</h3>
-                                        <p class="mt-1 text-sm text-gray-500">Updated ${formatDate(repo.updated_at)}</p>
-                                    </div>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-gray-600">${repo.description || 'No description provided.'}</p>
-                                </div>
-                                <div class="mt-6 flex justify-between items-center">
+                        repos.slice(0, 12).forEach(repo => {
+                            const repoCard = document.createElement('div');
+                            repoCard.className = 'repo-card bg-gray-50 overflow-hidden shadow rounded-lg transition duration-300 ease-in-out';
+                    
+                            // Get language color (unchanged)
+                            const languageColor = getLanguageColor(repo.language);
+                    
+                            // 👉 NEW: placeholder for the README description
+                            let readmeHTML = '';
+                    
+                            /* --------------------------------------------------------------
+                             *  Load the README (or a short auto‑generated description) 
+                             * -------------------------------------------------------------- */
+                            if (repo.description && repo.description.trim().length > 0) {
+                                // Use the repository “description” field when available
+                                const descriptionText = repo.description.replace(/\n/g, '<br>');
+                                readmeHTML = `
+                                    <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
+                                        <summary class="font-medium text-gray-800">Description</summary>
+                                        ${descriptionText}
+                                    </details>
+                                `;
+                            } else {
+                                // Fall back to fetching the raw README
+                                fetch(`https://api.github.com/repos/RCaz33/${repo.name}/readme`)
+                                    .then(r => {
+                                        if (!r.ok) throw new Error('README not found');
+                                        return r.json();
+                                    })
+                                    .then(data => {
+                                        const rawUrl = data.download_url;           // raw markdown URL
+                                        if (!rawUrl) throw new Error('No download URL');
+                                        return fetch(rawUrl).then(r => r.text());
+                                    })
+                                    .then(md => {
+                                        // Very light Markdown → HTML conversion (only headings & lists)
+                                        const html = md
+                                            .replace(/^(#{1,3})\s+(.*)/gm, '<h2>$1 $2</h2>')   // support ### as h2
+                                            .replace(/^-\s+(.*)$/gm, '<li>$1</li>')            // bullet → <li>
+                                            .replace(/(?:^|[^a-zA-Z0-9_])!\[([^\]]+)\]\(([^)]+)\)/g, '$1<img src="$2" alt="$1" style="max-width:100%;"/>')
+                                            .replace(/(?:^|[^a-zA-Z0-9_])\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+                    
+                                        readmeHTML = `
+                                            <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
+                                                <summary class="font-medium text-gray-800">README excerpt</summary>
+                                                ${html}
+                                            </details>
+                                        `;
+                                        // Inject when ready
+                                        injectReadme(repoCard, readmeHTML);
+                                    })
+                                    .catch(err => {
+                                        console.warn('README fetch failed for', repo.name, err);
+                                        readmeHTML = `
+                                            <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
+                                                <summary class="font-medium text-gray-800">README not available</summary>
+                                                <p class="text-gray-600">You can view the repo on GitHub.</p>
+                                            </details>
+                                        `;
+                                        injectReadme(repoCard, readmeHTML);
+                                    });
+                            }
+                    
+                            // Build the static parts of the card
+                            repoCard.innerHTML = `
+                                <div class="px-4 py-5 sm:p-6">
                                     <div class="flex items-center">
-                                        ${repo.language ? `
-                                        <span class="language-color" style="background-color: ${languageColor};"></span>
-                                        <span class="text-sm text-gray-500">${repo.language}</span>
-                                        ` : ''}
-                                    </div>
-                                    <div class="flex items-center space-x-4">
-                                        <div class="flex items-center text-gray-500 text-sm">
-                                            <i class="fas fa-star mr-1"></i>
-                                            <span>${repo.stargazers_count}</span>
+                                        <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+                                            <i class="fas fa-code text-blue-600 text-xl"></i>
                                         </div>
-                                        <div class="flex items-center text-gray-500 text-sm">
-                                            <i class="fas fa-code-branch mr-1"></i>
-                                            <span>${repo.forks_count}</span>
+                                        <div class="ml-5 w-0 flex-1">
+                                            <h3 class="text-lg font-medium text-gray-900 truncate">${repo.name}</h3>
+                                            <p class="mt-1 text-sm text-gray-500">Updated ${formatDate(repo.updated_at)}</p>
                                         </div>
                                     </div>
+                                    <div class="mt-4">
+                                        <p class="text-gray-600">${repo.description || 'No description provided.'}</p>
+                                    </div>
+                                    ${readmeHTML}
+                                    <div class="mt-6 flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            ${repo.language ? `
+                                            <span class="language-color" style="background-color: ${languageColor};"></span>
+                                            <span class="text-sm text-gray-500">${repo.language}</span>
+                                            ` : ''}
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <div class="flex items-center text-gray-500 text-sm">
+                                                <i class="fas fa-star mr-1"></i>
+                                                <span>${repo.stargazers_count}</span>
+                                            </div>
+                                            <div class="flex items-center text-gray-500 text-sm">
+                                                <i class="fas fa-code-branch mr-1"></i>
+                                                <span>${repo.forks_count}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <a href="${repo.html_url}" target="_blank" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                            View Repository
+                                        </a>
+                                    </div>
                                 </div>
-                                <div class="mt-4">
-                                    <a href="${repo.html_url}" target="_blank" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                        View Repository
-                                    </a>
-                                </div>
-                            </div>
-                        `;
-                        
-                        reposContainer.appendChild(repoCard);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching GitHub data:', error);
-                    document.getElementById('repos-container').innerHTML = `
-                        <div class="text-center py-8 col-span-3">
-                            <i class="fas fa-exclamation-triangle text-4xl text-red-500"></i>
-                            <p class="mt-4 text-gray-600">Failed to load repositories. Please try again later.</p>
-                        </div>
-                    `;
-                });
+                            `;
+                    
+                            reposContainer.appendChild(repoCard);
+                        });
+                    
+                        /* -----------------------------------------------------------------
+                         *  Helper: inject the async‑loaded README block into the card
+                         * ----------------------------------------------------------------- */
+                        function injectReadme(cardElement, markdownHTML) {
+                            // The fetch that pulls the README runs after the card is already appended.
+                            // We simply replace the placeholder (which is an empty string) with the real HTML.
+                            const placeholder = cardElement.querySelector('.placeholder-readme');
+                            if (placeholder) {
+                                placeholder.innerHTML = markdownHTML;
+                            }
+                        }
+
                 
             // Format date to relative time
             function formatDate(dateString) {
