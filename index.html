@@ -548,52 +548,43 @@
                     reposContainer.appendChild(repoCard);
             
                     // Load README asynchronously
-                    if (repo.description && repo.description.trim().length > 0) {
-                        const descriptionText = repo.description.replace(/\n/g, '<br>');
-                        const readmeContent = `
-                            <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
-                                <summary class="font-medium text-gray-800 cursor-pointer">Description</summary>
-                                <div class="mt-2 text-sm text-gray-600">${descriptionText}</div>
-                            </details>
-                        `;
-                        const placeholder = repoCard.querySelector('.placeholder-readme');
-                        if (placeholder) placeholder.innerHTML = readmeContent;
-                    } else {
-                        // Fetch README from GitHub API
-                        fetch(`https://api.github.com/repos/RCaz33/${repo.name}/readme`)
-                            .then(r => {
-                                if (!r.ok) throw new Error('README not found');
-                                return r.json();
-                            })
-                            .then(data => {
-                                const rawUrl = data.download_url;
-                                if (!rawUrl) throw new Error('No download URL');
-                                return fetch(rawUrl).then(r => r.text());
-                            })
-                            .then(md => {
-                                // Simple Markdown to HTML conversion
-                                const html = md
-                                    .substring(0, 5000) // Limit length
-                                    .replace(/^(#{1,3})\s+(.*)/gm, '<h3 class="font-semibold mt-2">$2</h3>')
-                                    .replace(/^-\s+(.*)$/gm, '<li class="ml-4">$1</li>')
-                                    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                                    .replace(/\n/g, '<br>');
+        
+                    
+                    // Fetch README from GitHub API
+                    fetch(`https://api.github.com/repos/RCaz33/${repo.name}/readme`)
+                        .then(r => {
+                            if (!r.ok) throw new Error('README not found');
+                            return r.json();
+                        })
+                        .then(data => {
+                            const rawUrl = data.download_url;
+                            if (!rawUrl) throw new Error('No download URL');
+                            return fetch(rawUrl).then(r => r.text());
+                        })
+                        .then(md => {
+                            // Simple Markdown to HTML conversion
+                            const html = md
+                                .substring(0, 5000) // Limit length
+                                .replace(/^(#{1,3})\s+(.*)/gm, '<h3 class="font-semibold mt-2">$2</h3>')
+                                .replace(/^-\s+(.*)$/gm, '<li class="ml-4">$1</li>')
+                                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                                .replace(/\n/g, '<br>');
+        
+                            const readmeContent = `
+                                <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
+                                    <summary class="font-medium text-gray-800 cursor-pointer">README excerpt</summary>
+                                    <div class="mt-2 text-sm text-gray-600">${html}...</div>
+                                </details>
+                            `;
+                            const placeholder = repoCard.querySelector('.placeholder-readme');
+                            if (placeholder) placeholder.innerHTML = readmeContent;
+                        })
+                        .catch(err => {
+                            console.warn('README fetch failed for', repo.name, err);
+                            const placeholder = repoCard.querySelector('.placeholder-readme');
+                            if (placeholder) placeholder.innerHTML = '';
+                        });
             
-                                const readmeContent = `
-                                    <details class="mt-4 rounded-lg bg-white p-3 border border-gray-200">
-                                        <summary class="font-medium text-gray-800 cursor-pointer">README excerpt</summary>
-                                        <div class="mt-2 text-sm text-gray-600">${html}...</div>
-                                    </details>
-                                `;
-                                const placeholder = repoCard.querySelector('.placeholder-readme');
-                                if (placeholder) placeholder.innerHTML = readmeContent;
-                            })
-                            .catch(err => {
-                                console.warn('README fetch failed for', repo.name, err);
-                                const placeholder = repoCard.querySelector('.placeholder-readme');
-                                if (placeholder) placeholder.innerHTML = '';
-                            });
-                    }
                 });
             })
             .catch(error => {
